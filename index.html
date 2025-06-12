@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人间清醒研究院</title>
+    <meta property="og:title" content="人间清醒研究院">
+    <meta property="og:description" content="致力于追求真理、发掘智慧、唤醒内在潜能的独立研究机构">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #1a252f;
+            --share-btn: #1da1f2;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        /* 分享按钮容器 */
+        .share-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
+        .share-button {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--light);
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .share-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(15deg);
+        }
+        
+        .share-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+            padding: 15px;
+            background: rgba(44, 62, 80, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            transform: scale(0);
+            transform-origin: top right;
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .share-options.active {
+            transform: scale(1);
+        }
+        
+        .share-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .share-option:hover {
+            transform: translateY(-3px);
+        }
+        
+        .share-option.wechat {
+            background: #2aae67;
+        }
+        
+        .share-option.weibo {
+            background: #e6162d;
+        }
+        
+        .share-option.qq {
+            background: #12b7f5;
+        }
+        
+        .share-option.douban {
+            background: #2e963d;
+        }
+        
+        .share-option.dingtalk {
+            background: #0072ff;
+        }
+        
+        .share-option.link {
+            background: #9c27b0;
+        }
+        
+        /* 弹窗样式 */
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .popup.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .popup-content {
+            background: linear-gradient(145deg, #2c3e50, #1a252f);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 90%;
+            width: 400px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+        
+        .popup h3 {
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            color: var(--light);
+        }
+        
+        .qrcode {
+            margin: 0 auto 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            width: 180px;
+            height: 180px;
+        }
+        
+        .qrcode-placeholder {
+            width: 160px;
+            height: 160px;
+            background: linear-gradient(45deg, #2aae67, #1a934f);
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .link-share {
+            display: flex;
+            margin: 20px 0;
+        }
+        
+        .link-share input {
+            flex: 1;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 8px 0 0 8px;
+            color: white;
+            font-size: 16px;
+        }
+        
+        .copy-button {
+            padding: 12px 20px;
+            background: linear-gradient(145deg, #9c27b0, #7b1fa2);
+            color: white;
+            border: none;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-button:hover {
+            background: linear-gradient(145deg, #ab47bc, #8e24aa);
+        }
+        
+        .close-popup {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #ecf0f1;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .close-popup:hover {
+            background: rgba(231, 76, 60, 0.2);
+            transform: rotate(90deg);
+        }
+        
+        .deployment-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 30px 0;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .deployment-section h3 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--light);
+            font-size: 1.5rem;
+        }
+        
+        .deployment-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .deployment-option {
+            background: rgba(44, 62, 80, 0.7);
+            border-radius: 10px;
+            padding: 15px;
+            flex: 1;
+            min-width: 250px;
+            max-width: 350px;
+            transition: all 0.3s ease;
+        }
+        
+        .deployment-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .deployment-option h4 {
+            color: var(--secondary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .deployment-option p {
+            line-height: 1.6;
+        }
+        
+        /* 原有样式 */
+        header {
+            text-align: center;
+            padding: 2rem 0;
+            position: relative;
+            margin-bottom: 3rem;
+        }
+        
+        .logo {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        
+        .logo::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 5px solid transparent;
+            border-top-color: var(--secondary);
+            animation: spin 6s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            position: relative;
+            display: inline-block;
+        }
+        
+        h1::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(to right, transparent, var(--accent), transparent);
+            border-radius: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .mission-box {
+            background: rgba(44, 62, 80, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 3rem 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .mission-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: var(--light);
+        }
+        
+        .mission-content {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            text-align: justify;
+        }
+        
+        .pillars {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin: 3rem 0;
+            justify-content: center;
+        }
+        
+        .pillar {
+            flex: 1;
+            min-width: 280px;
+            max-width: 350px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .pillar:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .pillar i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+        
+        .pillar h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--light);
+        }
+        
+        .pillar p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .quote-section {
+            margin: 5rem 0;
+            text-align: center;
+        }
+        
+        blockquote {
+            font-size: 2rem;
+            font-style: italic;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            padding: 0 2rem;
+        }
+        
+        blockquote::before, blockquote::after {
+            content: '"';
+            font-size: 4rem;
+            opacity: 0.3;
+            position: absolute;
+        }
+        
+        blockquote::before {
+            top: -30px;
+            left: 0;
+        }
+        
+        blockquote::after {
+            bottom: -60px;
+            right: 0;
+        }
+        
+        cite {
+            display: block;
+            margin-top: 1.5rem;
+            font-size: 1.2rem;
+            font-style: normal;
+            color: var(--light);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .contact {
+            margin-bottom: 2rem;
+        }
+        
+        .copyright {
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .mission-title {
+                font-size: 2rem;
+            }
+            
+            blockquote {
+                font-size: 1.5rem;
+            }
+            
+            .share-container {
+                top: 15px;
+                right: 15px;
+            }
+            
+            .share-button {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .share-options {
+                padding: 10px;
+            }
+            
+            .share-option {
+                width: 42px;
+                height: 42px;
+                font-size: 20px;
+            }
+            
+            .deployment-options {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+                letter-spacing: 1px;
+            }
+            
+            .mission-box {
+                padding: 1.5rem;
+            }
+            
+            .pillar {
+                min-width: 100%;
+            }
+            
+            .popup-content {
+                padding: 20px;
+                width: 95%;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 分享按钮容器 -->
+    <div class="share-container">
+        <div class="share-button" id="shareButton">
+            <i class="fas fa-share-alt"></i>
+        </div>
+        <div class="share-options" id="shareOptions">
+            <div class="share-option wechat" data-platform="wechat">
+                <i class="fab fa-weixin"></i>
+            </div>
+            <div class="share-option weibo" data-platform="weibo">
+                <i class="fab fa-weibo"></i>
+            </div>
+            <div class="share-option qq" data-platform="qq">
+                <i class="fab fa-qq"></i>
+            </div>
+            <div class="share-option douban" data-platform="douban">
+                <i class="fab fa-weebly"></i>
+            </div>
+            <div class="share-option dingtalk" data-platform="dingtalk">
+                <i class="fas fa-comment-dots"></i>
+            </div>
+            <div class="share-option link" data-platform="link">
+                <i class="fas fa-link"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 分享弹窗 -->
+    <div class="popup" id="wechatPopup">
+        <div class="popup-content">
+            <button class="close-popup"><i class="fas fa-times"></i></button>
+            <h3>微信分享</h3>
+            <div class="qrcode">
+                <div class="qrcode-placeholder">
+                    微信二维码
+                </div>
+            </div>
+            <p>请使用微信扫描二维码分享</p>
+        </div>
+    </div>
+    
+    <div class="popup" id="linkPopup">
+        <div class="popup-content">
+            <button class="close-popup"><i class="fas fa-times"></i></button>
+            <h3>复制链接分享</h3>
+            <div class="link-share">
+                <input type="text" id="shareLink" value="https://人间清醒研究院.org" readonly>
+                <button class="copy-button" id="copyButton">
+                    <i class="fas fa-copy"></i> 复制
+                </button>
+            </div>
+            <p id="copyStatus">点击复制按钮分享此页面链接</p>
+            <div id="localWarning" style="color: #e74c3c; margin-top: 15px; display: none;">
+                <i class="fas fa-exclamation-triangle"></i> 您正在本地查看此页面，分享链接可能无效。请部署到服务器后分享。
+            </div>
+        </div>
+    </div>
+    
+    <div class="popup" id="dingtalkPopup">
+        <div class="popup-content">
+            <button class="close-popup"><i class="fas fa-times"></i></button>
+            <h3>钉钉分享</h3>
+            <div class="qrcode">
+                <div class="qrcode-placeholder" style="background:linear-gradient(145deg, #0072ff, #005cc9);">
+                    钉钉二维码
+                </div>
+            </div>
+            <p>请使用钉钉扫描二维码分享</p>
+        </div>
+    </div>
+    
+    <!-- 页面内容 -->
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-brain" style="font-size: 4rem; color: #fff;"></i>
+            </div>
+            <h1>人间清醒研究院</h1>
+            <p class="subtitle">致力于追求真理、发掘智慧、唤醒内在潜能的独立研究机构。在复杂世界中保持清醒认知，引领深度思考。</p>
+        </header>
+        
+        <div class="mission-box">
+            <h2 class="mission-title">我们的使命</h2>
+            <p class="mission-content">
+                在这个信息爆炸、认知混乱的时代，人间清醒研究院如同一座思想灯塔，致力于引导人们穿透迷雾，寻找真理的彼岸。我们追求在混沌中保持清醒，在嘈杂中聆听智慧，在迷茫中探寻方向。
+                <br><br>
+                我们通过系统的认知研究、哲学反思和文化交流，帮助个体发展批判性思维、情感智慧和内在觉知。我们相信，真正的清醒来源于对自我认知的深度探索和对世界复杂性的深刻理解。
+            </p>
+        </div>
+        
+        <div class="pillars">
+            <div class="pillar">
+                <i class="fas fa-lightbulb"></i>
+                <h3>理性思考</h3>
+                <p>培养批判性思维和逻辑分析能力，避免非理性决策，在情绪波动中保持客观判断力</p>
+            </div>
+            <div class="pillar">
+                <i class="fas fa-heart"></i>
+                <h3>情感智慧</h3>
+                <p>发展情绪觉察和管理能力，建立健康的人际关系，在情感波动中维持内在平衡</p>
+            </div>
+            <div class="pillar">
+                <i class="fas fa-eye"></i>
+                <h3>真相探寻</h3>
+                <p>穿透表象看本质，识别虚假信息和认知偏见，在信息洪流中坚守对真理的追求</p>
+            </div>
+        </div>
+        
+        <div class="quote-section">
+            <blockquote>
+                清醒非冷漠，洞察非批判。清醒是在混沌中保持平衡的能力，是在迷失中守护方向的能力，是在喧嚣中守护内心宁静的能力。
+            </blockquote>
+            <cite>—— 人间清醒研究院 · 核心思想</cite>
+        </div>
+        
+        <!-- 部署解决方案部分 -->
+        <div class="deployment-section">
+            <h3><i class="fas fa-cloud-upload-alt"></i> 页面部署解决方案</h3>
+            <div class="deployment-options">
+                <div class="deployment-option">
+                    <h4><i class="fab fa-github"></i> GitHub Pages</h4>
+                    <p>免费托管静态网站，只需将代码推送到GitHub仓库，开启GitHub Pages功能即可获得https://yourname.github.io/repo的URL。</p>
+                </div>
+                <div class="deployment-option">
+                    <h4><i class="fas fa-server"></i> Netlify</h4>
+                    <p>连接Git仓库自动部署，提供免费SSL证书和全球CDN加速，支持自定义域名。</p>
+                </div>
+                <div class="deployment-option">
+                    <h4><i class="fas fa-globe"></i> Vercel</h4>
+                    <p>开发者友好的部署平台，特别适合前端项目，提供即时预览和自动部署功能。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="contact">
+            <p>联系方式: contact@humanawareness.org</p>
+        </div>
+        <div class="copyright">
+            &copy; 2023 人间清醒研究院 | 保留所有权利 | 为真理与智慧而生
+        </div>
+    </footer>
+    
+    <script>
+        // 分享按钮功能
+        const shareButton = document.getElementById('shareButton');
+        const shareOptions = document.getElementById('shareOptions');
+        const localWarning = document.getElementById('localWarning');
+        
+        shareButton.addEventListener('click', function() {
+            shareOptions.classList.toggle('active');
+        });
+        
+        // 点击页面其他地方关闭分享菜单
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.share-container')) {
+                shareOptions.classList.remove('active');
+            }
+        });
+        
+        // 获取所有平台分享按钮
+        const shareButtons = document.querySelectorAll('.share-option');
+        const wechatPopup = document.getElementById('wechatPopup');
+        const linkPopup = document.getElementById('linkPopup');
+        const dingtalkPopup = document.getElementById('dingtalkPopup');
+        const shareLink = document.getElementById('shareLink');
+        const copyButton = document.getElementById('copyButton');
+        const copyStatus = document.getElementById('copyStatus');
+        
+        // 检查是否是本地环境
+        const isLocalEnvironment = window.location.href.startsWith('about:') || 
+                                  window.location.href.startsWith('file:') || 
+                                  window.location.href.includes('localhost');
+        
+        // 给每个分享按钮添加点击事件
+        shareButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const platform = this.getAttribute('data-platform');
+                
+                // 关闭所有弹窗
+                document.querySelectorAll('.popup').forEach(popup => {
+                    popup.classList.remove('active');
+                });
+                
+                // 根据平台打开相应弹窗
+                if (platform === 'wechat') {
+                    wechatPopup.classList.add('active');
+                } else if (platform === 'dingtalk') {
+                    dingtalkPopup.classList.add('active');
+                } else if (platform === 'link') {
+                    // 如果是本地环境，显示警告
+                    if (isLocalEnvironment) {
+                        localWarning.style.display = 'block';
+                        shareLink.value = "https://human-awareness-institute.org"; // 默认URL
+                    } else {
+                        localWarning.style.display = 'none';
+                        shareLink.value = window.location.href;
+                    }
+                    linkPopup.classList.add('active');
+                } else {
+                    // 其他平台实际分享逻辑
+                    let shareUrl;
+                    switch(platform) {
+                        case 'weibo':
+                            shareUrl = `https://service.weibo.com/share/share.php?url=${encodeURIComponent(isLocalEnvironment ? "https://human-awareness-institute.org" : window.location.href)}&title=${encodeURIComponent(document.title)}`;
+                            break;
+                        case 'qq':
+                            shareUrl = `https://connect.qq.com/widget/shareqq/index.html?url=${encodeURIComponent(isLocalEnvironment ? "https://human-awareness-institute.org" : window.location.href)}&title=${encodeURIComponent(document.title)}`;
+                            break;
+                        case 'douban':
+                            shareUrl = `https://www.douban.com/share/service?href=${encodeURIComponent(isLocalEnvironment ? "https://human-awareness-institute.org" : window.location.href)}&name=${encodeURIComponent(document.title)}`;
+                            break;
+                    }
+                    
+                    // 打开分享窗口
+                    if (shareUrl) {
+                        window.open(shareUrl, '_blank', 'width=600,height=500');
+                    }
+                }
+                
+                // 关闭分享菜单
+                shareOptions.classList.remove('active');
+            });
+        });
+        
+        // 复制链接功能（使用现代API）
+        copyButton.addEventListener('click', async function() {
+            try {
+                // 使用更现代的Clipboard API
+                await navigator.clipboard.writeText(shareLink.value);
+                
+                // 更新UI状态
+                copyButton.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                copyStatus.textContent = '链接已复制到剪贴板！';
+                copyStatus.style.color = '#2ecc71';
+                
+                // 为兼容不支持Clipboard API的老式浏览器添加备用方案
+            } catch (err) {
+                // 老式浏览器兼容方案
+                shareLink.select();
+                document.execCommand('copy');
+                
+                // 更新UI状态
+                copyButton.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                copyStatus.textContent = '链接已复制到剪贴板！';
+                copyStatus.style.color = '#2ecc71';
+            }
+            
+            // 3秒后恢复状态
+            setTimeout(() => {
+                copyButton.innerHTML = '<i class="fas fa-copy"></i> 复制';
+                copyStatus.textContent = '点击复制按钮分享此页面链接';
+                copyStatus.style.color = '';
+            }, 3000);
+        });
+        
+        // 关闭弹窗按钮
+        document.querySelectorAll('.close-popup').forEach(button => {
+            button.addEventListener('click', function() {
+                this.closest('.popup').classList.remove('active');
+            });
+        });
+        
+        // 点击弹窗外部关闭弹窗
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('popup')) {
+                event.target.classList.remove('active');
+            }
+        });
+        
+        // 键盘支持：ESC键关闭弹窗
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                document.querySelectorAll('.popup').forEach(popup => {
+                    popup.classList.remove('active');
+                });
+            }
+        });
+        
+        // 如果是本地环境，在控制台显示部署提示
+        if (isLocalEnvironment) {
+            console.log("%c⚠️ 您正在本地环境中查看此页面", "color: #e74c3c; font-size: 16px; font-weight: bold;");
+            console.log("%c要分享此页面，请将代码部署到服务器（如GitHub Pages、Netlify或Vercel）", "color: #3498db; font-size: 14px;");
+            console.log("%c页面底部提供了部署解决方案参考", "color: #2ecc71; font-size: 14px;");
+        }
+    </script>
+</body>
+</html>
